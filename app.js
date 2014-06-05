@@ -45,7 +45,7 @@ app.use(methodOverride());
 app.use(session({
   secret: 'keyboard cat',
   store: new mongoStore({
-    url: 'mongodb://heroku_app24672534:n1aakvv8tt20ccjhuoqpe178th@ds037478.mongolab.com:37478/heroku_app24672534',
+    url: 'mongodb://localhost/junefifth',
     collection: 'sessions'
   }),
   proxy: false,
@@ -117,6 +117,9 @@ passport.use(new TwitterStrategy({
     });
   }
 ));
+
+var routes = require('./app/controllers/index.js');
+var users = require('./app/controllers/users.js');
 
 app.get('/', routes.index);
 
