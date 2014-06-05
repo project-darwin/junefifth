@@ -1,0 +1,62 @@
+{
+  "manifest_version": 2,
+
+  "name": "githelp",
+  "description": "githelp in your browser",
+  "version": "1.0",
+
+
+
+  // "background": {
+  //   "scripts": ["background.js"],
+  //   "persistent": false
+  // },
+
+"browser_action": {
+    "default_icon": "/images/logo.png",
+    "default_popup": "/views/popup.html"
+  },
+
+
+  "background": {
+    "scripts": ["/scripts/eventPage.js"],
+    "persistent": false
+  },
+
+"content_scripts": [
+    {
+      "matches": ["*://github.com/*"],
+      "js": ["/scripts/search.js"],
+      "run_at": "document_start"
+    }
+  ],
+
+  // this will trigger when we reach a page that
+  // matches the string within the matches array
+  // what we can do with the content_scripts is detect
+  // for a github page, then fire a script
+  // this script will send back the name of of the repository
+  // or the username so that we can automatically search
+  // for the user's work
+
+  "devtools_page": "/views/devtools.html",
+
+
+  "content_security_policy": "script-src 'unsafe-eval'; object-src 'self'",
+
+  "author": "Ji Ho Koo",
+
+"permissions": [
+    "unlimitedStorage",
+    "contextMenus",
+    "cookies",
+    "notifications",
+    "tabs",
+    "storage",
+    "pageCapture",
+    "*://github.com/*",
+    "http://localhost:3000/*"
+  ]
+
+
+}
