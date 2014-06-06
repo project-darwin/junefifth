@@ -1,28 +1,27 @@
-var express = require('express');
-var morgan = require('morgan');
-var bodyParser = require('body-parser');
-var methodOverride = require('method-override');
-var compress = require('compression');
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var request = require('request');
-var path = require('path');
-var passport = require('passport');
-var mongoose = require('mongoose');
-var TwitterStrategy = require('passport-twitter').Strategy;
-var jade = require('jade');
-var request = require('request');
-var util = require('util');
-var twitter = require('twitter');
-var twit = new twitter({
-  consumer_key: 'ci0Q6SK0f8PXtr5gYarml7biZ',
-  consumer_secret: 'YW7MZm9uXYQ5JSfDtXLjkwpM4LQuixRsjDUc2bwlhqQGD3qFRk',
-  access_token_key: '1931356736-M7pD8Wmn6mzq6kXmOPpe9GWzry3nWJuYJasPrc3',
-  access_token_secret: 'spGSgct45blGtMKca469NpoOgU8nQxtOC6rvzIdpyF6vR'
-});
-var mongoStore = require('connect-mongo')({session: session});
-var app = express();
+// express and middleware modules
+var express = require('express'),
+  morgan = require('morgan'),
+  bodyParser = require('body-parser'),
+  methodOverride = require('method-override'),
+  compress = require('compression'),
+  cookieParser = require('cookie-parser'),
+  session = require('express-session'),
+  request = require('request'),
+  path = require('path');
 
+// passport related modules
+var passport = require('passport'),
+  TwitterStrategy = require('passport-twitter').Strategy,
+  FacebookStrategy = require('passport-facebook').Strategy;
+
+var jade = require('jade'),
+  request = require('request'),
+  util = require('util'),
+  mongoose = require('mongoose'),
+  mongoStore = require('connect-mongo')({session: session});
+
+// create express app
+var app = express();
 
 var env = process.env.NODE_ENV || 'dev';
 if('dev' == env){
@@ -34,9 +33,7 @@ if('dev' == env){
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'app/views'));
 app.set('view engine', 'jade');
-
 app.enable('jsonp callback');
-
 app.use(morgan(env));
 app.use(compress());
 app.use(cookieParser('keyboard cat'));
@@ -60,7 +57,6 @@ app.use(passport.session());
 app.use(express.static(__dirname + '/public'));
 app.use('/lib', express.static(__dirname + '/app/components'));
 
-
 passport.serializeUser(function(user, done) {
   done(null, user.id);
 });
@@ -76,8 +72,53 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
+// facebook clientID: 631624253598715 
+// facebook clientSecret: 41c1f2cdccf65c93ff6d68ad102c65e6
 
 var User = require('./app/models/users.js')['User'];
+
+passport.use(new FacebookStrategy({
+  clientID: '631624253598715',
+  clientSecret: '41c1f2cdccf65c93ff6d68ad102c65e6',
+  callbackURL: 'http://localhost:3000/auth/facebook/callback',
+  },
+  function(accessToken, refreshToken, profile, done) {
+    User.findOne({fbId: profile.id}, function (err, user) {
+      if(err) {
+        console.log(err);
+        return err;
+      }
+      if(!user) {
+        var u = new models.User({
+          fbId: profile.id,
+          firstName: profile.name.givenName,
+          lastName: profile.name.familyName,
+          fullName: profile.displayName,
+          accessToken: accessToken,
+          email: profile.emails[0].value,
+          username: profile.username,
+          fb: profile._json
+          // picture: profile.photos,
+        });
+        u.save(function(err) {
+          return done(err, u);
+        });
+      } else {
+        user.fbId = profile.id;
+        user.firstName = profile.name.givenName;
+        user.lastName = profile.name.familyName;
+        user.fullName = profile.displayName;
+        user.accessToken = accessToken;
+        user.email = profile.emails[0].value;
+        user.username = profile.username;
+        user.fb = profile._json;
+        user.save(function(err) {
+          return done(err, user);
+        });
+      }
+    });
+  }
+));
 
 // https://apps.twitter.com/app/6095054/keys
 passport.use(new TwitterStrategy({
@@ -123,6 +164,17 @@ var users = require('./app/controllers/users.js');
 
 app.get('/', routes.index);
 
-app.listen(process.env.PORT, function(){
+app.get('/auth/facebook', 
+  passport.authenticate('facebook', { scope: 'email' }),
+  users.signin);
+
+app.get('/auth/facebook/callback', 
+  passport.authenticate('facebook', { failureRedirect: '/' }),
+  function(req, res) {
+    users.authCallback(req, res);
+  }
+);
+
+app.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });

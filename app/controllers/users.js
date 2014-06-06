@@ -11,3 +11,7 @@ exports.logout = function(req, res){
 exports.signin = function(req, res){
   console.log("hello");
 };
+
+exports.authCallback = function(req, res){
+  console.log('hello');
+};
