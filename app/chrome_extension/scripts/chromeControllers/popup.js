@@ -8,6 +8,14 @@ githelpExtension.controller('PopupController', function ($scope) {
 
     var http = new XMLHttpRequest();
 
+    $scope.initialize = function(){
+      console.log('initialize');
+      angular.element('.shcBtn .shcBtnCTA .srchAddToCart .intShipHide').on('click', function(){
+        console.log('inside the initialize function')
+        console.log(this.id);
+      });
+    };
+
     $scope.submitForm = function(){
       console.log("hello")
       var params = "duration="+$scope.duration+"&topic="+$scope.topic+"&message="+$scope.message;

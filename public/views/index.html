@@ -1,0 +1,13 @@
+<section class="body" data-ng-controller="IndexController">
+	<div data-ng-hide="global.authenticated">
+		<h3 class="brand-name center">pricewise</h3>
+	  <span class="motto center">price protection from your favorite brand.</span>
+	  <button class="btn btn-primary center" id="btn-login"><a href="/auth/facebook">Sign-In/Sign-Up With Facebook</a></button>
+	</div>
+  <div data-ng-show="global.authenticated">
+  	<!-- this is where the dashboard will go -->
+  	<section class="item-box">
+  		<a class="item-link center" href="">hello</a>
+  	</section>
+  </div>
+</section>

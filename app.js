@@ -89,7 +89,7 @@ passport.use(new FacebookStrategy({
         return err;
       }
       if(!user) {
-        var u = new models.User({
+        var u = new User({
           fbId: profile.id,
           firstName: profile.name.givenName,
           lastName: profile.name.familyName,
@@ -174,6 +174,8 @@ app.get('/auth/facebook/callback',
     users.authCallback(req, res);
   }
 );
+
+app.get('/logout', users.logout);
 
 app.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

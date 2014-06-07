@@ -1,17 +1,21 @@
 var User = require('../models/users.js')['User'];
 
 exports.login = function(req, res){
-  console.log("hello");
+  res.render('login');
 };
 
 exports.logout = function(req, res){
-  console.log("hello");
+  req.logout();
+  res.redirect('/');
 };
 
 exports.signin = function(req, res){
-  console.log("hello");
+  // console.log('SIGN IN REDIRECT?');
+  // res.set('content-type', 'text/javascript');
+  res.render('index');
+  // res.redirect('/');
 };
 
 exports.authCallback = function(req, res){
-  console.log('hello');
+	res.redirect('/');
 };

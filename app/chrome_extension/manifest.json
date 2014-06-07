@@ -25,9 +25,10 @@
 
 "content_scripts": [
     {
-      "matches": ["*://github.com/*"],
-      "js": ["/scripts/search.js"],
-      "run_at": "document_start"
+      "matches": ["*://github.com/*", "*://www.sears.com/*"],
+      "js": ["/scripts/jquery-1.8.2.min.js","/scripts/search.js"],
+      "run_at": "document_start",
+      "all_frames": true
     }
   ],
 
@@ -55,7 +56,10 @@
     "storage",
     "pageCapture",
     "*://github.com/*",
-    "http://localhost:3000/*"
+    "http://localhost:3000/*",
+    "history",
+    "http://*/*",
+    "https://*/*"
   ]
 
 
