@@ -175,6 +175,11 @@ app.get('/auth/facebook/callback',
   }
 );
 
+app.post('/chrome', function(req, res){
+  console.log(req.body);
+  res.send(200);
+})
+
 app.get('/logout', users.logout);
 
 app.listen(app.get('port'), function(){
